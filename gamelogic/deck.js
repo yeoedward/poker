@@ -1,7 +1,5 @@
 module.exports = Deck;
 
-var Card = require('./card');
-
 function Deck() {
     this.cards = [];
     for (var i=0; i<52; i++) {
