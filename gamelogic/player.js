@@ -71,3 +71,7 @@ Player.prototype.getCards = function () {
 Player.prototype.broke = function () {
     return this.stack === 0;
 };
+
+Player.prototype.muck = function () {
+    this.cards = [];
+};

@@ -42,7 +42,9 @@ Dealer.prototype.startHand = function () {
     console.log("new hand");
     this.board = [];
     this.allIn = false;
-
+    this.players[0].muck();
+    this.players[1].muck();
+    
     this.players[this.button].postBlind(this.sb);
     this.players[nextPlayer(this.button)].postBlind(this.bb);
 
@@ -61,11 +63,12 @@ Dealer.prototype.startHand = function () {
 
     if (this.allIn)
         this.nextStreet();
-
-    var dealer = this;
-    this.players[this.button].move(this.toCall, function (fold) {
-        dealer.action(dealer.button,fold);
-    });
+    else {
+        var dealer = this;
+        this.players[this.button].move(this.toCall, function (fold) {
+            dealer.action(dealer.button,fold);
+        });
+    }
 };
 
 Dealer.prototype.nextStreet = function () {
@@ -110,6 +113,7 @@ Dealer.prototype.nextStreet = function () {
 
     }
 
+    console.log('showdown');
     var h1 = Poker.evalHand(this.players[0].getCards().concat(this.board));
     var h2 = Poker.evalHand(this.players[1].getCards().concat(this.board));
     if (h1.handType === h2.handType && h1.handRank === h2.handRank)
@@ -162,8 +166,12 @@ Dealer.prototype.action = function (pos,fold) {
     var preflop = this.board.length === 0;
     calledRaise = calledRaise && !(pos === this.button && preflop
                                         && this.toCall === this.bb);
-    var checkedOnBtn = this.toCall === 0 && amt === 0
-                                         && pos === this.button;
+    var checkedOnBtn = this.toCall === 0 && amt === 0 && 
+                                            pos === this.button;
+
+    console.log("Stack size: "+this.players[pos].stack);
+    console.log(this.players[pos].isAllIn());
+
     /* If someone called an all-in */
     if ((this.players[pos].isAllIn() || 
          this.players[nextPlayer(pos)].isAllIn())
@@ -199,7 +207,7 @@ function nextPlayer(pos) {
 
 
 function test() {
-    var d = new Dealer(1,3,300);
+    var d = new Dealer(1,3,100);
     d.addPlayer(new Player(), 0);
     d.addPlayer(new Player(), 1);
     d.startGame();
