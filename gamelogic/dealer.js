@@ -39,6 +39,7 @@ Dealer.prototype.startGame = function () {
 
 
 Dealer.prototype.startHand = function () {
+    console.log("new hand");
     this.board = [];
     this.allIn = false;
 
@@ -55,15 +56,15 @@ Dealer.prototype.startHand = function () {
     }
 
     this.toCall = this.players[nextPlayer(this.button)].amt();
-    this.pot = this.sb + this.players[nextPlayer(this.button)].amt();
+    this.pot = 0;
     console.log("Pot: "+this.pot);
 
     if (this.allIn)
         this.nextStreet();
 
     var dealer = this;
-    this.players[this.button].move(this.toCall, function () {
-        dealer.action(dealer.button);
+    this.players[this.button].move(this.toCall, function (fold) {
+        dealer.action(dealer.button,fold);
     });
 };
 
@@ -88,8 +89,8 @@ Dealer.prototype.nextStreet = function () {
                 this.board.push(this.deck.nextCard());            
                 console.log(this.board);
                 this.players[nextPlayer(this.button)].move(this.toCall,
-                    function () {
-                        dealer.action(nextPlayer(dealer.button));
+                    function (fold) {
+                        dealer.action(nextPlayer(dealer.button), fold);
                 });
                 return;
             case 3:
@@ -97,17 +98,20 @@ Dealer.prototype.nextStreet = function () {
                 this.board.push(this.deck.nextCard());            
                 console.log(this.board);
                 this.players[nextPlayer(this.button)].move(this.toCall,
-                    function () {
-                        console.log("Player "+nextPlayer(dealer.button)+" bet "+dealer.players[nextPlayer(dealer.button)].amt()+".");
-                        dealer.action(nextPlayer(dealer.button));
+                function (fold) {
+                    console.log("Player "+nextPlayer(dealer.button)+
+                                " bet "+
+                                dealer.players[nextPlayer(dealer.button)]
+                                      .amt()+".");
+                        dealer.action(nextPlayer(dealer.button), fold);
                 });
                 return;
         };
 
     }
 
-    var h1 = Poker.evalHand(this.player[0].cards());
-    var h2 = Poker.evalHand(this.player[1].cards());
+    var h1 = Poker.evalHand(this.players[0].getCards().concat(this.board));
+    var h2 = Poker.evalHand(this.players[1].getCards().concat(this.board));
     if (h1.handType === h2.handType && h1.handRank === h2.handRank)
         this.tie();
     else if (h1.handType >= h2.handType && h1.handRank > h2.handRank)
@@ -117,13 +121,18 @@ Dealer.prototype.nextStreet = function () {
 };
 
 Dealer.prototype.win = function (pos) {
-    this.player[pos].ship(this.pot);
-    if (this.player[nextPlayer(pos)].broke())
-        this.endGame();
+    console.log("Player "+pos+" wins and ships "+this.pot+".");
+    this.players[pos].ship(this.pot);
+    if (this.players[nextPlayer(pos)].broke())
+        this.endGame(pos);
     else {
         this.button = nextPlayer(this.button);
         this.startHand();
     }
+};
+
+Dealer.prototype.endGame = function (pos) {
+    console.log("Player "+pos+" wins the heads up tournament!");
 };
 
 Dealer.prototype.tie = function () {
@@ -138,11 +147,11 @@ Dealer.prototype.tie = function () {
     this.startHand();
 };
 
-Dealer.prototype.action = function (pos) {
+Dealer.prototype.action = function (pos,fold) {
     var amt = this.players[pos].amt();
 
     /* Check if player folded */
-    if (amt === -1) {
+    if (fold) {
         this.pot += this.players[0].amt() + this.players[1].amt();
         this.win(nextPlayer(pos));
         return;
@@ -150,11 +159,15 @@ Dealer.prototype.action = function (pos) {
 
     /* Big blind option */
     var calledRaise = this.toCall === amt && this.toCall > 0;
+    var preflop = this.board.length === 0;
+    calledRaise = calledRaise && !(pos === this.button && preflop
+                                        && this.toCall === this.bb);
     var checkedOnBtn = this.toCall === 0 && amt === 0
                                          && pos === this.button;
     /* If someone called an all-in */
-    if ((this.players[pos].isAllIn() || this.players[nextPlayer(pos)].isAllIn())
-                                     && this.toCall >= amt) {
+    if ((this.players[pos].isAllIn() || 
+         this.players[nextPlayer(pos)].isAllIn())
+        && this.toCall >= amt) {
         this.allIn = true;
 
         /* Return extra chips to other player */
@@ -163,19 +176,19 @@ Dealer.prototype.action = function (pos) {
         }
     }
 
-    console.log("pos "+pos);
     console.log("toCall = "+amt);
     this.toCall = amt;
 
     /* Check if player's action closes the betting round */
     if (this.allIn || calledRaise || checkedOnBtn) {
-        console.log("Next Street");
         this.nextStreet();
     } else {
         var dealer = this;
-        this.players[nextPlayer(pos)].move(this.toCall, function () {
-            console.log("Player "+nextPlayer(pos)+" bet "+dealer.players[nextPlayer(pos)].amt()+".");
-            dealer.action(nextPlayer(pos));
+        this.players[nextPlayer(pos)].move(this.toCall, function (fold) {
+            console.log("Player "+nextPlayer(pos)+
+                        " bet "+dealer.players[nextPlayer(pos)].amt()+
+                        ".");
+            dealer.action(nextPlayer(pos), fold);
         });
     }
 };

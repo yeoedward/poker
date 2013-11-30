@@ -45,13 +45,18 @@ Player.prototype.move = function (toCall, action) {
     var player = this;
     rl.question("Bet?", function(answer) {
         var b = parseInt(answer);
-        console.log(b);
+        console.log("bet = " + b);
         rl.close();
-        console.log(player.bet);
-        player.bet += b;
-        console.log("this.bet = "+player.bet);
-        player.stack -= b;
-        action();
+        if (b === -1) {
+            console.log("Player folded");
+            action(true);
+        } else {
+            player.bet += b;
+            console.log("player.bet = "+player.bet);
+            player.stack -= b;
+            action(false);
+        }
+
     });
 };
 
@@ -59,4 +64,10 @@ Player.prototype.ship = function (amt) {
     this.stack += amt;
 };
 
+Player.prototype.getCards = function () {
+    return this.cards;
+};
 
+Player.prototype.broke = function () {
+    return this.stack === 0;
+};
