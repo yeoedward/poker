@@ -2,6 +2,7 @@
 <head><title>Poker Room</title>
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/vendor/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="js/vendor/paper.js"></script>
     <script type="text/javascript" src="js/socket.js"></script>
     <script type="text/javascript" src="js/poker.js"></script>
@@ -10,9 +11,11 @@
     <img id="table" src="img/table.png" style="display:none" />
     <img id="cards" src="img/cards.png" style="display:none" />
     <img id="redChip" src="img/redchip.gif" style="display:none" />
+    <h1 id="waitingMsg">Waiting for another player...</h1>
     <canvas id="myCanvas"></canvas>
 
-    <div id="hud">
+    <div id="hud" style="display:none">
+        <span id="playerName">Player 1</span>
         <div id="slider">
             <input type="range" id="raiseAmt" min="3", max="300" step="3" value = "3" />
         </div>

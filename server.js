@@ -12,11 +12,5 @@ server.listen(8000);
 var io = require('socket.io').listen(server, {log: false});
 
 io.sockets.on('connection', function (socket) {
-    socket.emit('newPlayer', socket.id);
-
-    socket.on('sit', function(seat) {
-        console.log(socket.id+' tried to sit on seat'+seat+'.');
-    });
-
+    socket.emit('startGame');
 });
-

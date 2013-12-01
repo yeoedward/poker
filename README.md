@@ -7,8 +7,7 @@ TODO:
 
     Integrate UI with networking
 
-    Show bets and raises in canvas
+    Add textbox to show slider value (amount raised)
 
-    Once it's fully functional, add animations, sounds, etc.
+    Once it's fully functional, add animations, sounds, use require.js?
 
-    Use require.js??

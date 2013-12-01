@@ -24,6 +24,8 @@ var cardFactor = 6;
 
 var chipFactor = 15;
 
+var betWidgets = [];
+
 function scale (height, canvas, factor) {
     return canvas.height/factor/height; 
 }
@@ -123,51 +125,48 @@ function player2Cards (cards, canvas) {
     }
 }
 
-function player1Bet (amt, canvas, list) {
+function player1Bet (amt, canvas) {
     var m = scale(cardHeight(), canvas, cardFactor);
     var x = view.center.x + 5 * cardWidth() * m
     var y = view.center.y;
     var text = new PointText(new Point(x,y));
-    list.push(text);
+    betWidgets.push(text);
     text.fillColor = 'black';
     text.content = '$'+amt;
 
     var chip = new Raster("redChip");
-    list.push(chip);
+    betWidgets.push(chip);
     var n = scale(chip.height, canvas, chipFactor);
     chip.scale(n);
     chip.position.x = view.center.x + 4 * cardWidth() * m;
     chip.position.y = y;
 }
 
-function player2Bet (amt, canvas, list) {
+function player2Bet (amt, canvas) {
     var m = scale(cardHeight(), canvas, cardFactor);
     var x = view.center.x - 5 * cardWidth() * m
     var y = view.center.y;
     var text = new PointText(new Point(x,y));
-    list.push(text);
+    betWidgets.push(text);
     text.fillColor = 'black';
     text.content = '$'+amt;
 
     var chip = new Raster("redChip");
-    list.push(chip);
+    betWidgets.push(chip);
     var n = scale(chip.height, canvas, chipFactor);
     chip.scale(n);
     chip.position.x = view.center.x - 3.5 * cardWidth() * m;
     chip.position.y = y;
 }
 
-function clearBets(L) {
-    L.map(function (p) {p.remove()});
+function clearBets() {
+    betWidgets.map(function (p) {p.remove()});
 }
-
-window.onload = init;
 
 function init () {
     var canvas = document.getElementById("myCanvas");
     paper.setup(canvas);
     paper.install(window);
-
     var table = new Raster("table");
     var tableBounds = new Rectangle(0,0, canvas.width, canvas.height); 
     table.fitBounds(tableBounds);
@@ -179,11 +178,9 @@ function init () {
     turn('Ah', canvas);
     river('Ks', canvas);
 
-    var L = [];
-    player1Bet(999, canvas, L);
-    player2Bet(999, canvas, L);
-    clearBets(L);
-
+    player1Bet(999, canvas);
+    player2Bet(999, canvas);
+    clearBets();
 }
 
 
