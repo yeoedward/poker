@@ -3,3 +3,17 @@ body {
     background:cover;
     background-size: 100%;
 }
+
+#myCanvas {
+    height: 500px; 
+    margin: auto;
+    display: block;
+}
+
+#hud {
+    text-align: center;
+    margin: auto;
+    width: 200px;
+    background-color: rgba(0,0,0,0.8);
+    padding: 10px 0px;
+}
