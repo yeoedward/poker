@@ -1,3 +1,5 @@
 body {
-    background-image:url('../img/vegas.jpg');
+    background-image:url('../img/strip.jpg');
+    background:cover;
+    background-size: 100%;
 }
