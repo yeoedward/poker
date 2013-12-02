@@ -1,3 +1,12 @@
+var canvas;
+window.onload = function () {
+    canvas = document.getElementById("myCanvas");
+};
+
+var cardFactor = 6;
+var chipFactor = 15;
+var betWidgets = [];
+
 function toRank(c) {
     var r = c[0];
     switch (r) {
@@ -20,13 +29,8 @@ function toSuit(c) {
     return c[1];
 }
 
-var cardFactor = 6;
 
-var chipFactor = 15;
-
-var betWidgets = [];
-
-function scale (height, canvas, factor) {
+function scale (height, factor) {
     return canvas.height/factor/height; 
 }
 
@@ -38,7 +42,7 @@ function cardHeight () {
     return 123;
 }
 
-function getCard (c, canvas) {
+function getCard (c) {
     var wd = cardWidth();
     var ht = cardHeight();
     var x,y;
@@ -70,63 +74,63 @@ function getCard (c, canvas) {
     var rect = new Rectangle(x,y,wd,ht);
     var card = cards.getSubRaster(rect);
     cards.remove();
-    card.scale(scale(cardHeight(), canvas, cardFactor));
+    card.scale(scale(cardHeight(), cardFactor));
     return card;
 }
 
 
-function flop (cards, canvas) {
+function flop (cards) {
     var flop = cards.map(function (c) {
-        return getCard(c, canvas);
+        return getCard(c);
     });
 
-    var width = cardWidth() * scale(cardHeight(), canvas, cardFactor);
+    var width = cardWidth() * scale(cardHeight(), cardFactor);
     for (var i=0; i<3; i++) {
         flop[i].position.x = view.center.x + width*(i-2);
         flop[i].position.y = view.center.y;
     }
 }
 
-function turn (c, canvas) {
-    var card = getCard(c, canvas);
-    var width = cardWidth() * scale (cardHeight(), canvas, cardFactor);
+function turn (c) {
+    var card = getCard(c);
+    var width = cardWidth() * scale (cardHeight(), cardFactor);
     card.position.x = view.center.x + 1.25*width;
     card.position.y = view.center.y;
 }
 
-function river (c, canvas) {
-    var card = getCard(c, canvas);
-    var width = cardWidth() * scale (cardHeight(), canvas, cardFactor);
+function river (c) {
+    var card = getCard(c);
+    var width = cardWidth() * scale (cardHeight(), cardFactor);
     card.position.x = view.center.x + 2.5*width;
     card.position.y = view.center.y;
 }
 
-function player1Cards (cards, canvas) {
+function player1Cards (cards) {
     cards = cards.map(function (c) {
-        return getCard(c, canvas);
+        return getCard(c);
     });
 
-    var width = cardWidth() * scale (cardHeight(), canvas, cardFactor);
+    var width = cardWidth() * scale (cardHeight(), cardFactor);
     for (var i=0; i<2; i++) {
         cards[i].position.x = view.center.x + width*(i/3-7);
         cards[i].position.y = view.center.y;
     }
 }
 
-function player2Cards (cards, canvas) {
+function player2Cards (cards) {
     cards = cards.map(function (c) {
-        return getCard(c, canvas);
+        return getCard(c);
     });
 
-    var width = cardWidth() * scale (cardHeight(), canvas, cardFactor);
+    var width = cardWidth() * scale (cardHeight(), cardFactor);
     for (var i=0; i<2; i++) {
         cards[i].position.x = view.center.x - width*(i/3-7);
         cards[i].position.y = view.center.y;
     }
 }
 
-function player1Bet (amt, canvas) {
-    var m = scale(cardHeight(), canvas, cardFactor);
+function player1Bet (amt) {
+    var m = scale(cardHeight(), cardFactor);
     var x = view.center.x + 5 * cardWidth() * m
     var y = view.center.y;
     var text = new PointText(new Point(x,y));
@@ -136,14 +140,14 @@ function player1Bet (amt, canvas) {
 
     var chip = new Raster("redChip");
     betWidgets.push(chip);
-    var n = scale(chip.height, canvas, chipFactor);
+    var n = scale(chip.height, chipFactor);
     chip.scale(n);
     chip.position.x = view.center.x + 4 * cardWidth() * m;
     chip.position.y = y;
 }
 
-function player2Bet (amt, canvas) {
-    var m = scale(cardHeight(), canvas, cardFactor);
+function player2Bet (amt) {
+    var m = scale(cardHeight(), cardFactor);
     var x = view.center.x - 5 * cardWidth() * m
     var y = view.center.y;
     var text = new PointText(new Point(x,y));
@@ -153,7 +157,7 @@ function player2Bet (amt, canvas) {
 
     var chip = new Raster("redChip");
     betWidgets.push(chip);
-    var n = scale(chip.height, canvas, chipFactor);
+    var n = scale(chip.height, chipFactor);
     chip.scale(n);
     chip.position.x = view.center.x - 3.5 * cardWidth() * m;
     chip.position.y = y;
@@ -164,23 +168,11 @@ function clearBets() {
 }
 
 function init () {
-    var canvas = document.getElementById("myCanvas");
     paper.setup(canvas);
     paper.install(window);
     var table = new Raster("table");
     var tableBounds = new Rectangle(0,0, canvas.width, canvas.height); 
     table.fitBounds(tableBounds);
-
-    player1Cards(['Kh', 'Kd'], canvas);
-    player2Cards(['FD', 'FD'], canvas);
-
-    flop(['As','Ac','Ad'], canvas);
-    turn('Ah', canvas);
-    river('Ks', canvas);
-
-    player1Bet(999, canvas);
-    player2Bet(999, canvas);
-    clearBets();
 }
 
 
