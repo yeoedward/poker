@@ -1,8 +1,7 @@
 module.exports = Player;
 
-var readline = require('readline');
-
-function Player() {
+function Player(socket) {
+    this.socket = socket;
     this.cards = [];
     this.stack = 0;
     this.bet = 0;
@@ -28,6 +27,8 @@ Player.prototype.isAllIn = function () {
 
 Player.prototype.dealCard = function(card) {
     this.cards.push(card);
+    if (this.cards.length === 2)
+        this.socket.emit('dealCards', this.cards);
 };
 
 Player.prototype.amt = function () {
@@ -35,28 +36,18 @@ Player.prototype.amt = function () {
 };
 
 Player.prototype.move = function (toCall, action) {
-    console.log(toCall-this.bet + " to call.");
-
-    var rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
+    var amtToCall = toCall - this.bet;
+    var minRaise = 2*amtToCall;
+    this.socket.emit('yourTurn', amtToCall, minRaise, this.stack);
     var player = this;
-    rl.question("Bet?", function(answer) {
-        var b = parseInt(answer);
-        console.log("bet = " + b);
-        rl.close();
+    this.socket.once('makeMove', function (b) {
         if (b === -1) {
-            console.log("Player folded");
             action(true);
         } else {
             player.bet += b;
-            console.log("player.bet = "+player.bet);
             player.stack -= b;
             action(false);
         }
-
     });
 };
 

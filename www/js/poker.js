@@ -1,11 +1,13 @@
-var canvas;
-window.onload = function () {
-    canvas = document.getElementById("myCanvas");
-};
 
+var canvas;
 var cardFactor = 6;
 var chipFactor = 15;
 var betWidgets = [];
+
+
+function initCanvas() {
+    canvas = document.getElementById("myCanvas");
+}
 
 function toRank(c) {
     var r = c[0];

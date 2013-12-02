@@ -5,12 +5,15 @@ Online Poker Room
 
 TODO:
 
-    Integrate UI with networking
+    Integrate flop, turn, river UI with networking
 
     Add textbox to show slider value (amount raised)
 
-    Once it's fully functional, add animations, sounds, use require.js?
+    Add stack and pot size
 
+    Once it's fully functional, add animations, sounds, etc...
+
+    Clean up code! Lots of ugly globals and stuff. Use require.js.
 
 Media Sources:
     

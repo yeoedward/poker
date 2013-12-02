@@ -142,7 +142,7 @@ Dealer.prototype.endGame = function (pos) {
 Dealer.prototype.tie = function () {
     var numSBs = this.pot / this.sb / 2;
     var btnShare = Math.floor(numSBs) * this.sb;
-    var bbShare = Math.ceiling(numSBs) * this.sb;
+    var bbShare = Math.ceil(numSBs) * this.sb;
 
     this.players[this.button].ship(btnShare);
     this.players[nextPlayer(this.button)].ship(bbShare);
@@ -205,12 +205,3 @@ function nextPlayer(pos) {
     return (pos+1) % 2;
 }
 
-
-function test() {
-    var d = new Dealer(1,3,100);
-    d.addPlayer(new Player(), 0);
-    d.addPlayer(new Player(), 1);
-    d.startGame();
-}
-
-test();

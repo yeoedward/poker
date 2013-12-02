@@ -1,3 +1,6 @@
+var Dealer = require('./gamelogic/dealer');
+var Player = require('./gamelogic/player');
+
 var nodestatic = require('node-static');
 var fs = new nodestatic.Server('./www');
 
@@ -11,6 +14,18 @@ server.listen(8000);
 
 var io = require('socket.io').listen(server, {log: false});
 
+var players = [];
 io.sockets.on('connection', function (socket) {
-    socket.emit('startGame');
+    console.log(socket + " connected.");
+    players.push(socket);
+    socket.emit('playerNum', players.length);
+    if (players.length === 2) {
+        console.log("starting game...");
+        io.sockets.emit('startGame');
+
+        var d = new Dealer(1,3,100);
+        d.addPlayer(new Player(players[0]), 0);
+        d.addPlayer(new Player(players[1]), 1);
+        d.startGame();
+    }
 });

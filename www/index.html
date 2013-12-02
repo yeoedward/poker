@@ -6,6 +6,12 @@
     <script type="text/javascript" src="js/vendor/paper.js"></script>
     <script type="text/javascript" src="js/socket.js"></script>
     <script type="text/javascript" src="js/poker.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            initCanvas();
+            initBtns();
+        };
+    </script>
 </head>
 <body>
     <img id="table" src="img/table.png" style="display:none" />
@@ -20,9 +26,9 @@
             <input type="range" id="raiseAmt" min=3 max=300 step=3 value=3 />
         </div>
         <div id="hudButtons">
-            <input type="button" value="Fold" />
-            <input type="button" value="Check/call" />
-            <input type="button" value="Raise" />
+            <input id="foldBtn" type="button" value="Fold" />
+            <input id="callBtn" type="button" value="Check/call" />
+            <input id="raiseBtn" type="button" value="Raise" />
         </div>
     </div>
 </body>
