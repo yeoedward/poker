@@ -24,6 +24,8 @@ function io () {
     return io;
 }
 
+var startingStack = 100; //num BB's
+
 io.sockets.on('connection', function (socket) {
     console.log(socket + " connected.");
     players.push(socket);
@@ -31,9 +33,9 @@ io.sockets.on('connection', function (socket) {
     if (players.length > 2) players = [];
     if (players.length === 2) {
         console.log("starting game...");
-        io.sockets.emit('startGame');
+        io.sockets.emit('startGame', startingStack);
 
-        var d = new Dealer(1,3,100);
+        var d = new Dealer(1,3, startingStack);
         d.addPlayer(new Player(players[0]), 0);
         d.addPlayer(new Player(players[1]), 1);
         d.startGame();

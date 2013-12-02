@@ -17,10 +17,13 @@ Player.prototype.clearAmt = function () {
     this.bet = 0;
 };
 
-Player.prototype.postBlind = function (blind) {
+Player.prototype.postBlind = function (pos,blind) {
     var posted = Math.min(this.stack, blind);
     this.stack -= posted;
     this.bet = posted;
+    var player = this;
+    Server.io().sockets.emit("player"+(pos+1)+"Bet", player.bet,
+                             player.stack);
 };
 
 Player.prototype.isAllIn = function () {
@@ -48,11 +51,11 @@ Player.prototype.move = function (pos, toCall, action) {
             action(true);
         } else {
             player.bet += b;
+            player.stack -= b;
             if (b > 0) {
                 Server.io().sockets.emit("player"+(pos+1)+"Bet", player.bet,
                                          player.stack);
             }
-            player.stack -= b;
             action(false);
         }
     });

@@ -4,12 +4,13 @@ poker
 Online Poker Room
 
 TODO:
+    Endgame
 
-    Clear table after every hand
+    win msg when fold
 
-    Add textbox to show slider value (amount raised)
+    Add button (button.png in www/img)
 
-    Add stack and pot size
+    All-in logic error: cases where stacks are of different sizes
 
     Once it's fully functional, add animations, sounds, etc...
 
@@ -24,3 +25,5 @@ Media Sources:
     http://math.hws.edu/javanotes/c13/s1.html
 
     http://www.casinopartycompanies.com/images/Texas_Holdem_Poker_Table.jpg
+
+    http://static.ddpoker.com/gamehelp/images/button.png

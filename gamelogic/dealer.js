@@ -40,13 +40,15 @@ Dealer.prototype.startGame = function () {
 
 
 Dealer.prototype.startHand = function () {
+    Server.io().sockets.emit("startHand");
     this.board = [];
     this.allIn = false;
     this.players[0].muck();
     this.players[1].muck();
     
-    this.players[this.button].postBlind(this.sb);
-    this.players[nextPlayer(this.button)].postBlind(this.bb);
+    this.players[this.button].postBlind(this.button, this.sb);
+    this.players[nextPlayer(this.button)].postBlind(nextPlayer(this.button),
+                                                               this.bb);
 
     if (this.players[0].isAllIn() || this.players[1].isAllIn())
         this.allIn = true;
@@ -121,30 +123,37 @@ Dealer.prototype.nextStreet = function () {
 
     }
 
+    // TODO: send both cards to both players
+    Server.io().sockets.emit('revealCards', [this.players[0].getCards(),
+                                             this.players[1].getCards()]);
     var h1 = Poker.evalHand(this.players[0].getCards().concat(this.board));
     var h2 = Poker.evalHand(this.players[1].getCards().concat(this.board));
     if (h1.handType === h2.handType && h1.handRank === h2.handRank)
-        this.tie();
+        this.tie(h1.handName);
     else if (h1.handType >= h2.handType && h1.handRank > h2.handRank)
-        this.win(0);
+        this.win(0, h1.handName);
     else
-        this.win(1);
+        this.win(1, h2.handName);
 };
 
-Dealer.prototype.win = function (pos) {
+Dealer.prototype.win = function (pos, hand) {
     this.players[pos].ship(this.pot);
-    if (this.players[nextPlayer(pos)].broke())
-        this.endGame(pos);
-    else {
-        this.button = nextPlayer(this.button);
-        this.startHand();
-    }
+    Server.io().sockets.emit("showdown", "Player "+(pos+1)+" wins with "+hand+".");
+    var dealer = this;
+    setTimeout(function () {
+        if (dealer.players[nextPlayer(pos)].broke())
+            dealer.endGame(pos);
+        else {
+            dealer.button = nextPlayer(dealer.button);
+            dealer.startHand();
+        }}, 5000);
 };
 
 Dealer.prototype.endGame = function (pos) {
+    Server.io().sockets.emit('endGame', pos);
 };
 
-Dealer.prototype.tie = function () {
+Dealer.prototype.tie = function (hand) {
     var numSBs = this.pot / this.sb / 2;
     var btnShare = Math.floor(numSBs) * this.sb;
     var bbShare = Math.ceil(numSBs) * this.sb;
@@ -153,7 +162,9 @@ Dealer.prototype.tie = function () {
     this.players[nextPlayer(this.button)].ship(bbShare);
 
     this.button = nextPlayer(this.button);
-    this.startHand();
+
+    Server.io().sockets.emit("showdown", "Both players tie with "+hand+".");
+    setTimeout(this.startHand, 5000);
 };
 
 Dealer.prototype.action = function (pos,fold) {

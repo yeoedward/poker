@@ -1,9 +1,15 @@
-
 var canvas;
 var cardFactor = 6;
 var chipFactor = 15;
 var p1Bet = [];
 var p2Bet = [];
+var board = [];
+var hole1 = [];
+var hole2 = [];
+var potWidget = null;
+var stack1Widget = null;
+var stack2Widget = null;
+var showdownMsg = null;
 
 
 function initCanvas() {
@@ -82,6 +88,44 @@ function getCard (c) {
 }
 
 
+function pot (size) {
+    var x = view.center.x - cardWidth() * scale(cardHeight(), cardFactor);;
+    var y = view.center.y + 2 * cardHeight() * scale(cardHeight(), cardFactor);
+    var text = new PointText(new Point(x,y));
+
+    if (potWidget !== null) {
+        potWidget.remove();
+    }
+
+    potWidget = text;
+    text.fillColor = 'black';
+    text.content = 'Pot size: '+size;
+}
+
+function stack1 (amt) {
+    var width = cardWidth() * scale (cardHeight(), cardFactor);
+    var x = view.center.x - 5*width;
+    var y = view.center.y - 1.5 * cardHeight() * scale(cardHeight(), cardFactor);
+    if (stack1Widget !== null)
+        stack1Widget.remove();
+    var text = new PointText(new Point(x,y));
+    stack1Widget = text;
+    text.fillColor = 'black';
+    text.content = "Player 1's stack size: "+amt;
+}
+
+function stack2 (amt) {
+    var width = cardWidth() * scale (cardHeight(), cardFactor);
+    var x = view.center.x + 2*width;
+    var y = view.center.y - 1.5 * cardHeight() * scale(cardHeight(), cardFactor);
+    if (stack2Widget !== null)
+        stack2Widget.remove();
+    var text = new PointText(new Point(x,y));
+    stack2Widget = text;
+    text.fillColor = 'black';
+    text.content = "Player 2's stack size: "+amt;
+}
+
 function flop (cards) {
     var flop = cards.map(function (c) {
         return getCard(c);
@@ -91,6 +135,7 @@ function flop (cards) {
     for (var i=0; i<3; i++) {
         flop[i].position.x = view.center.x + width*(i-2);
         flop[i].position.y = view.center.y;
+        board.push(flop[i]);
     }
 }
 
@@ -99,6 +144,7 @@ function turn (c) {
     var width = cardWidth() * scale (cardHeight(), cardFactor);
     card.position.x = view.center.x + 1.25*width;
     card.position.y = view.center.y;
+    board.push(card);
 }
 
 function river (c) {
@@ -106,6 +152,16 @@ function river (c) {
     var width = cardWidth() * scale (cardHeight(), cardFactor);
     card.position.x = view.center.x + 2.5*width;
     card.position.y = view.center.y;
+    board.push(card);
+}
+
+function showdown (msg) {
+    var x = view.center.x - 2*cardWidth() * scale(cardHeight(), cardFactor);;
+    var y = view.center.y + cardHeight() * scale(cardHeight(), cardFactor);
+    var text = new PointText(new Point(x,y));
+    text.fillColor = 'black';
+    text.content = msg;
+    showdownMsg = text;
 }
 
 function player1Cards (cards) {
@@ -113,10 +169,18 @@ function player1Cards (cards) {
         return getCard(c);
     });
 
+    if (hole1.length > 0) {
+        hole1.map(function(w) {w.remove();});
+        hole1 = [];
+    }
+
     var width = cardWidth() * scale (cardHeight(), cardFactor);
+    hole1.map(function(w) {w.remove();});
+    hole1 = [];
     for (var i=0; i<2; i++) {
         cards[i].position.x = view.center.x + width*(i/3-7);
         cards[i].position.y = view.center.y;
+        hole1.push(cards[i]);
     }
 }
 
@@ -125,10 +189,18 @@ function player2Cards (cards) {
         return getCard(c);
     });
 
+    if (hole2.length > 0) {
+        hole2.map(function(w) {w.remove();});
+        hole2 = [];
+    }
+
     var width = cardWidth() * scale (cardHeight(), cardFactor);
+    hole2.map(function(w) {w.remove();});
+    hole2 = [];
     for (var i=0; i<2; i++) {
         cards[i].position.x = view.center.x - width*(i/3-7);
         cards[i].position.y = view.center.y;
+        hole2.push(cards[i]);
     }
 }
 
@@ -175,6 +247,18 @@ function player2Bet (amt) {
 }
 
 
+function clearHand() {
+    board.map(function(w) {w.remove();});
+    board = [];
+    hole1.map(function(w) {w.remove();});
+    hole1 = [];
+    hole2.map(function(w) {w.remove();});
+    hole2 = [];
+    if (potWidget !== null)
+        potWidget.remove();
+    potWidget = null;
+}
+
 function clearBets() {
     if (p1Bet.length > 0) {
         p1Bet.map(function (w) {w.remove();});
@@ -185,6 +269,11 @@ function clearBets() {
         p2Bet.map(function (w) {w.remove();});
         p2Bet = [];
     }
+}
+
+function clearShowdownMsg () {
+    if (showdownMsg !== null)
+        showdownMsg.remove();
 }
 
 function init () {

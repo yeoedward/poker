@@ -9,9 +9,17 @@ socket.on('playerNum', function (n) {
     $("#playerName").text("Player "+n);
 });
 
-socket.on('startGame', function (id) {
+socket.on('startGame', function (stack) {
     $("#waitingMsg").css("display", "none");
     init(); 
+    stack1(stack);
+    stack2(stack);
+});
+
+socket.on('startHand', function (id) {
+    clearShowdownMsg();
+    clearHand();
+    pot(0);
 });
 
 socket.on('yourTurn', function (newToCall, minRaise, maxRaise, bet) {
@@ -22,17 +30,25 @@ socket.on('yourTurn', function (newToCall, minRaise, maxRaise, bet) {
     $("#raiseAmt").attr("max", maxRaise);
     console.log("maxRaise = "+maxRaise);
     $("#raiseAmt").val(minRaise);
+    $("#raiseBtn").val("Raise "+minRaise);
+    $("#raiseAmt").css("display","");
+    $("#raiseBtn").css("display","");
+    if (maxRaise < minRaise) {
+        $("#raiseAmt").css("display","none");
+        $("#raiseBtn").css("display","none");
+    }
     $("#hud").css("display", "block");  
 });
 
 socket.on('player1Bet', function (amt, stack) {
     player1Bet(amt);
-    console.log("Player 1's stack: "+stack);
+    stack1(stack);
 });
 
 socket.on('player2Bet', function (amt, stack) {
     player2Bet(amt);
     console.log("Player 2's stack: "+stack);
+    stack2(stack);
 });
 
 socket.on('dealCards', function (cards) {
@@ -47,25 +63,35 @@ socket.on('dealCards', function (cards) {
 
 socket.on('flop', function (cards) {
     flop(cards);
-    clearBets();
 });
 
 socket.on('turn', function (card) {
     turn(card);
-    clearBets();
 });
 
 socket.on('river', function (card) {
     river(card);
+});
+
+socket.on('pot', function (size) {
     clearBets();
+    pot(size);
 });
 
-socket.on('pot', function (pot) {
-    console.log('Pot size: '+pot);
+socket.on('revealCards', function (cards) {
+    player1Cards(cards[0]); 
+    player2Cards(cards[1]); 
 });
 
+socket.on('showdown', function (str) {
+    showdown(str);
+});
 
-function initBtns () {
+socket.on('endGame', function(pos) {
+    console.log("ENDGAME");
+});
+
+function initWidgets () {
     $("#foldBtn").click(function () {
         makeMove(-1);
     });
@@ -79,6 +105,12 @@ function initBtns () {
         var raiseBy = raiseTo - playerBet;
         console.log("raising by "+raiseBy);
         makeMove(raiseBy);
+    });
+
+    $("#raiseAmt").change(function () {
+        var newVal = $("#raiseAmt").val();
+        console.log(newVal);
+        $("#raiseBtn").val("Raise "+newVal);
     });
 }
 
