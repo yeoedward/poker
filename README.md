@@ -5,7 +5,7 @@ Online Poker Room
 
 TODO:
 
-    Integrate flop, turn, river UI with networking
+    Clear table after every hand
 
     Add textbox to show slider value (amount raised)
 
@@ -13,7 +13,7 @@ TODO:
 
     Once it's fully functional, add animations, sounds, etc...
 
-    Clean up code! Lots of ugly globals and stuff. Use require.js.
+    Clean up code! Lots of ugly globals and stuff. Use require.js and design patterns
 
 Media Sources:
     

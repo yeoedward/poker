@@ -2,7 +2,8 @@
 var canvas;
 var cardFactor = 6;
 var chipFactor = 15;
-var betWidgets = [];
+var p1Bet = [];
+var p2Bet = [];
 
 
 function initCanvas() {
@@ -133,40 +134,57 @@ function player2Cards (cards) {
 
 function player1Bet (amt) {
     var m = scale(cardHeight(), cardFactor);
-    var x = view.center.x + 5 * cardWidth() * m
-    var y = view.center.y;
-    var text = new PointText(new Point(x,y));
-    betWidgets.push(text);
-    text.fillColor = 'black';
-    text.content = '$'+amt;
-
-    var chip = new Raster("redChip");
-    betWidgets.push(chip);
-    var n = scale(chip.height, chipFactor);
-    chip.scale(n);
-    chip.position.x = view.center.x + 4 * cardWidth() * m;
-    chip.position.y = y;
-}
-
-function player2Bet (amt) {
-    var m = scale(cardHeight(), cardFactor);
     var x = view.center.x - 5 * cardWidth() * m
     var y = view.center.y;
     var text = new PointText(new Point(x,y));
-    betWidgets.push(text);
+    if (p1Bet.length > 0) {
+        p1Bet.map(function (w) {w.remove();});
+        p1Bet = [];
+    }
+    p1Bet.push(text);
     text.fillColor = 'black';
     text.content = '$'+amt;
 
     var chip = new Raster("redChip");
-    betWidgets.push(chip);
+    p1Bet.push(chip);
     var n = scale(chip.height, chipFactor);
     chip.scale(n);
     chip.position.x = view.center.x - 3.5 * cardWidth() * m;
     chip.position.y = y;
 }
 
+function player2Bet (amt) {
+    var m = scale(cardHeight(), cardFactor);
+    var x = view.center.x + 5 * cardWidth() * m
+    var y = view.center.y;
+    var text = new PointText(new Point(x,y));
+    if (p2Bet.length > 0) {
+        p2Bet.map(function (w) {w.remove();});
+        p2Bet = [];
+    }
+    p2Bet.push(text);
+    text.fillColor = 'black';
+    text.content = '$'+amt;
+
+    var chip = new Raster("redChip");
+    p2Bet.push(chip);
+    var n = scale(chip.height, chipFactor);
+    chip.scale(n);
+    chip.position.x = view.center.x + 4 * cardWidth() * m;
+    chip.position.y = y;
+}
+
+
 function clearBets() {
-    betWidgets.map(function (p) {p.remove()});
+    if (p1Bet.length > 0) {
+        p1Bet.map(function (w) {w.remove();});
+        p1Bet = [];
+    }
+
+    if (p2Bet.length > 0) {
+        p2Bet.map(function (w) {w.remove();});
+        p2Bet = [];
+    }
 }
 
 function init () {

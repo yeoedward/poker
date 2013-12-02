@@ -1,6 +1,7 @@
 var socket = io.connect('http://localhost:8000');
 
 var toCall;
+var playerBet;
 var playerNum;
 
 socket.on('playerNum', function (n) {
@@ -13,20 +14,25 @@ socket.on('startGame', function (id) {
     init(); 
 });
 
-socket.on('yourTurn', function (newToCall, minRaise, stack) {
+socket.on('yourTurn', function (newToCall, minRaise, maxRaise, bet) {
+    playerBet = bet;
     toCall = newToCall;
     $("#raiseAmt").attr("min", minRaise);
-    $("#raiseAmt").attr("max", stack);
+    console.log("minRaise = "+minRaise);
+    $("#raiseAmt").attr("max", maxRaise);
+    console.log("maxRaise = "+maxRaise);
     $("#raiseAmt").val(minRaise);
     $("#hud").css("display", "block");  
 });
 
-socket.on('player1Bet', function (amt) {
+socket.on('player1Bet', function (amt, stack) {
     player1Bet(amt);
+    console.log("Player 1's stack: "+stack);
 });
 
-socket.on('player2Bet', function (amt) {
+socket.on('player2Bet', function (amt, stack) {
     player2Bet(amt);
+    console.log("Player 2's stack: "+stack);
 });
 
 socket.on('dealCards', function (cards) {
@@ -41,14 +47,21 @@ socket.on('dealCards', function (cards) {
 
 socket.on('flop', function (cards) {
     flop(cards);
+    clearBets();
 });
 
 socket.on('turn', function (card) {
     turn(card);
+    clearBets();
 });
 
 socket.on('river', function (card) {
     river(card);
+    clearBets();
+});
+
+socket.on('pot', function (pot) {
+    console.log('Pot size: '+pot);
 });
 
 
@@ -62,7 +75,10 @@ function initBtns () {
     });
 
     $("#raiseBtn").click(function () {
-        makeMove(parseInt($("#raiseAmt").val()));
+        var raiseTo = parseInt($("#raiseAmt").val());
+        var raiseBy = raiseTo - playerBet;
+        console.log("raising by "+raiseBy);
+        makeMove(raiseBy);
     });
 }
 
@@ -71,3 +87,4 @@ function makeMove(b) {
     $("#hud").css("display", "none");
     socket.emit('makeMove', b);     
 };
+

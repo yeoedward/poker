@@ -1,5 +1,7 @@
 module.exports = Player;
 
+var Server = require('./../server');
+
 function Player(socket) {
     this.socket = socket;
     this.cards = [];
@@ -35,16 +37,21 @@ Player.prototype.amt = function () {
     return this.bet;
 };
 
-Player.prototype.move = function (toCall, action) {
+Player.prototype.move = function (pos, toCall, action) {
     var amtToCall = toCall - this.bet;
-    var minRaise = 2*amtToCall;
-    this.socket.emit('yourTurn', amtToCall, minRaise, this.stack);
+    var minRaise = this.bet + 2*amtToCall;
+    var maxRaise = this.stack + this.bet;
+    this.socket.emit('yourTurn', amtToCall, minRaise, maxRaise, this.bet);
     var player = this;
     this.socket.once('makeMove', function (b) {
         if (b === -1) {
             action(true);
         } else {
             player.bet += b;
+            if (b > 0) {
+                Server.io().sockets.emit("player"+(pos+1)+"Bet", player.bet,
+                                         player.stack);
+            }
             player.stack -= b;
             action(false);
         }

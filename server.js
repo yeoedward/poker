@@ -1,3 +1,7 @@
+module.exports = {
+    io: io
+};
+
 var Dealer = require('./gamelogic/dealer');
 var Player = require('./gamelogic/player');
 
@@ -15,10 +19,16 @@ server.listen(8000);
 var io = require('socket.io').listen(server, {log: false});
 
 var players = [];
+
+function io () {
+    return io;
+}
+
 io.sockets.on('connection', function (socket) {
     console.log(socket + " connected.");
     players.push(socket);
     socket.emit('playerNum', players.length);
+    if (players.length > 2) players = [];
     if (players.length === 2) {
         console.log("starting game...");
         io.sockets.emit('startGame');
