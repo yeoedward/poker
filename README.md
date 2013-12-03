@@ -4,15 +4,7 @@ poker
 Online Poker Room
 
 TODO:
-    Endgame
-
-    win msg when fold
-
     Add button (button.png in www/img)
-
-    All-in logic error: cases where stacks are of different sizes
-
-    Once it's fully functional, add animations, sounds, etc...
 
     Clean up code! Lots of ugly globals and stuff. Use require.js and design patterns
 

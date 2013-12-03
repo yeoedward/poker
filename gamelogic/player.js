@@ -42,7 +42,7 @@ Player.prototype.amt = function () {
 
 Player.prototype.move = function (pos, toCall, action) {
     var amtToCall = toCall - this.bet;
-    var minRaise = this.bet + 2*amtToCall;
+    var minRaise = Math.min(this.bet+this.stack, this.bet + 2*amtToCall);
     var maxRaise = this.stack + this.bet;
     this.socket.emit('yourTurn', amtToCall, minRaise, maxRaise, this.bet);
     var player = this;
@@ -63,6 +63,8 @@ Player.prototype.move = function (pos, toCall, action) {
 
 Player.prototype.ship = function (amt) {
     this.stack += amt;
+    this.bet -= amt;
+
 };
 
 Player.prototype.getCards = function () {
@@ -75,4 +77,8 @@ Player.prototype.broke = function () {
 
 Player.prototype.muck = function () {
     this.cards = [];
+};
+
+Player.prototype.getStack = function () {
+    return this.stack;
 };

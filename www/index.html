@@ -19,16 +19,18 @@
     <img id="redChip" src="img/redchip.gif" style="display:none" />
     <h1 id="waitingMsg">Waiting for another player...</h1>
     <canvas id="myCanvas"></canvas>
-    <h1 id="Victory"></h1> 
-    <div id="hud" style="display:none">
+    <h1 id="endGame"></h1> 
+    <div id="hud">
         <span id="playerName">Player 1</span>
-        <div id="slider">
-            <input type="range" id="raiseAmt" min=3 max=300 value=3 />
-        </div>
-        <div id="hudButtons">
-            <input id="foldBtn" type="button" value="Fold" />
-            <input id="callBtn" type="button" value="Check/call" />
-            <input id="raiseBtn" type="button" value="Raise" />
+        <div id="buttons" style="display:none">
+            <div id="slider">
+                <input type="range" id="raiseAmt" min=3 max=300 value=3 />
+            </div>
+            <div id="hudButtons">
+                <input id="foldBtn" type="button" value="Fold" />
+                <input id="callBtn" type="button" value="Check/call" />
+                <input id="raiseBtn" type="button" value="Raise" />
+            </div>
         </div>
     </div>
 </body>

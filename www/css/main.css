@@ -4,14 +4,14 @@ body {
     background-size: 100%;
 }
 
-#waitingMsg {
-    color: white;
-}
-
 #myCanvas {
     height: 400px; 
     margin: auto;
     display: block;
+}
+
+h1 {
+    color: white;
 }
 
 #playerName {
@@ -26,6 +26,7 @@ body {
     padding: 10px 0px;
 }
 
-#Victory {
-
+#endGame {
+    text-align: center;
+    display: block;
 }

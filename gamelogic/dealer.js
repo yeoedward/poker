@@ -138,7 +138,11 @@ Dealer.prototype.nextStreet = function () {
 
 Dealer.prototype.win = function (pos, hand) {
     this.players[pos].ship(this.pot);
-    Server.io().sockets.emit("showdown", "Player "+(pos+1)+" wins with "+hand+".");
+    var handMsg=" because Player "+(nextPlayer(pos)+1)+" folded";
+    if (hand !== null)
+        handMsg = " with "+hand;
+    Server.io().sockets.emit("showdown", 
+                             "Player "+(pos+1)+" wins"+handMsg+".");
     var dealer = this;
     setTimeout(function () {
         if (dealer.players[nextPlayer(pos)].broke())
@@ -150,7 +154,7 @@ Dealer.prototype.win = function (pos, hand) {
 };
 
 Dealer.prototype.endGame = function (pos) {
-    Server.io().sockets.emit('endGame', pos);
+    Server.io().sockets.emit('endGame', pos+1);
 };
 
 Dealer.prototype.tie = function (hand) {
@@ -173,7 +177,7 @@ Dealer.prototype.action = function (pos,fold) {
     /* Check if player folded */
     if (fold) {
         this.pot += this.players[0].amt() + this.players[1].amt();
-        this.win(nextPlayer(pos));
+        this.win(nextPlayer(pos), null);
         return;
     }
 
@@ -193,7 +197,10 @@ Dealer.prototype.action = function (pos,fold) {
 
         /* Return extra chips to other player */
         if (this.toCall > amt) {
-            this.players[nextPlayer(pos)].ship(this.toCall - amt);
+            var otherPos = nextPlayer(pos);
+            this.players[otherPos].ship(this.toCall - amt);
+            Server.io().sockets.emit("stack"+otherPos,
+                                     this.players[otherPos].getStack());
         }
     }
 

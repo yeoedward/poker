@@ -3,6 +3,7 @@ var socket = io.connect('http://localhost:8000');
 var toCall;
 var playerBet;
 var playerNum;
+var myStack;
 
 socket.on('playerNum', function (n) {
     playerNum = n;
@@ -14,9 +15,10 @@ socket.on('startGame', function (stack) {
     init(); 
     stack1(stack);
     stack2(stack);
+    myStack = stack;
 });
 
-socket.on('startHand', function (id) {
+socket.on('startHand', function () {
     clearShowdownMsg();
     clearHand();
     pot(0);
@@ -26,29 +28,32 @@ socket.on('yourTurn', function (newToCall, minRaise, maxRaise, bet) {
     playerBet = bet;
     toCall = newToCall;
     $("#raiseAmt").attr("min", minRaise);
-    console.log("minRaise = "+minRaise);
     $("#raiseAmt").attr("max", maxRaise);
-    console.log("maxRaise = "+maxRaise);
     $("#raiseAmt").val(minRaise);
     $("#raiseBtn").val("Raise "+minRaise);
     $("#raiseAmt").css("display","");
     $("#raiseBtn").css("display","");
+    console.log("minRaise= "+minRaise);
+    console.log("maxRaise= "+maxRaise);
     if (maxRaise < minRaise) {
         $("#raiseAmt").css("display","none");
         $("#raiseBtn").css("display","none");
     }
-    $("#hud").css("display", "block");  
+    $("#buttons").css("display", "block");  
 });
 
 socket.on('player1Bet', function (amt, stack) {
     player1Bet(amt);
     stack1(stack);
+    if(playerNum === 1)
+        myStack = stack;
 });
 
 socket.on('player2Bet', function (amt, stack) {
     player2Bet(amt);
-    console.log("Player 2's stack: "+stack);
     stack2(stack);
+    if(playerNum === 2)
+        myStack = stack;
 });
 
 socket.on('dealCards', function (cards) {
@@ -59,6 +64,14 @@ socket.on('dealCards', function (cards) {
         player1Cards(['FD','FD']);
         player2Cards(cards);
     }
+});
+
+socket.on('stack1', function (size) {
+    stack1(size);
+});
+
+socket.on('stack2', function (size) {
+    stack1(size);
 });
 
 socket.on('flop', function (cards) {
@@ -88,7 +101,17 @@ socket.on('showdown', function (str) {
 });
 
 socket.on('endGame', function(pos) {
-    console.log("ENDGAME");
+    $("#myCanvas").css("display","none");
+    $("#hud").css("display","none");
+    var msg;
+
+    if (playerNum === pos) {
+        msg = "Congratulations, you won!"; 
+    } else {
+        msg = "Sorry, you lost...";
+    }
+
+    $("#endGame").text(msg);
 });
 
 function initWidgets () {
@@ -97,26 +120,28 @@ function initWidgets () {
     });
 
     $("#callBtn").click(function () {
-        makeMove(toCall);
+        if (toCall > myStack) {
+            makeMove(myStack - playerBet);
+        } else {
+            makeMove(toCall);
+        }
     });
 
     $("#raiseBtn").click(function () {
         var raiseTo = parseInt($("#raiseAmt").val());
         var raiseBy = raiseTo - playerBet;
-        console.log("raising by "+raiseBy);
         makeMove(raiseBy);
     });
 
     $("#raiseAmt").change(function () {
         var newVal = $("#raiseAmt").val();
-        console.log(newVal);
         $("#raiseBtn").val("Raise "+newVal);
     });
 }
 
 /* Make bet */
 function makeMove(b) {
-    $("#hud").css("display", "none");
+    $("#buttons").css("display", "none");
     socket.emit('makeMove', b);     
 };
 
