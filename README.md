@@ -3,9 +3,7 @@ poker
 
 Online Poker Room
 
-Important:
-
-    Before running the server, don't forget to change the first line in www/js/socket.js to point to the correct url.
+Important: Before running the server, don't forget to change the first line in www/js/socket.js to point to the correct url.
 
 TODO:
 

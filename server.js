@@ -27,10 +27,10 @@ function io () {
 var startingStack = 100; //num BB's
 
 io.sockets.on('connection', function (socket) {
+    if (players.length === 2) players = [];
     console.log(socket + " connected.");
     players.push(socket);
     socket.emit('playerNum', players.length);
-    if (players.length > 2) players = [];
     if (players.length === 2) {
         console.log("starting game...");
         io.sockets.emit('startGame', startingStack);
