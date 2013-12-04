@@ -144,8 +144,6 @@ Dealer.prototype.win = function (pos, hand) {
     Server.io().sockets.emit("showdown", 
                              "Player "+(pos+1)+" wins"+handMsg+".");
     var dealer = this;
-    console.log("Player "+pos+": "+this.players[pos].getStack());
-    console.log("Player "+nextPlayer(pos)+": "+this.players[nextPlayer(pos)].getStack());
     setTimeout(function () {
         if (dealer.players[nextPlayer(pos)].broke())
             dealer.endGame(pos);

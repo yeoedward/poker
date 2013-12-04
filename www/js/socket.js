@@ -1,4 +1,4 @@
-var socket = io.connect('http://192.168.1.7:8000');
+var socket = io.connect('http://localhost:8000');
 
 var toCall;
 var playerBet;
