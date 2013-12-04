@@ -9,6 +9,8 @@ TODO:
 
     Add button (button.png in www/img)
 
+    Use rooms so more than 2 people can play at once
+
     Clean up code! Lots of ugly globals and stuff. Use require.js and design patterns
 
 Media Sources:
