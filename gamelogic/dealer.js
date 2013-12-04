@@ -123,14 +123,14 @@ Dealer.prototype.nextStreet = function () {
 
     }
 
-    // TODO: send both cards to both players
     Server.io().sockets.emit('revealCards', [this.players[0].getCards(),
                                              this.players[1].getCards()]);
     var h1 = Poker.evalHand(this.players[0].getCards().concat(this.board));
     var h2 = Poker.evalHand(this.players[1].getCards().concat(this.board));
     if (h1.handType === h2.handType && h1.handRank === h2.handRank)
         this.tie(h1.handName);
-    else if (h1.handType >= h2.handType && h1.handRank > h2.handRank)
+    else if (h1.handType > h2.handType ||
+             (h1.handType === h2.handType && h1.handRank > h2.handRank))
         this.win(0, h1.handName);
     else
         this.win(1, h2.handName);
@@ -144,6 +144,8 @@ Dealer.prototype.win = function (pos, hand) {
     Server.io().sockets.emit("showdown", 
                              "Player "+(pos+1)+" wins"+handMsg+".");
     var dealer = this;
+    console.log("Player "+pos+": "+this.players[pos].getStack());
+    console.log("Player "+nextPlayer(pos)+": "+this.players[nextPlayer(pos)].getStack());
     setTimeout(function () {
         if (dealer.players[nextPlayer(pos)].broke())
             dealer.endGame(pos);
@@ -168,7 +170,8 @@ Dealer.prototype.tie = function (hand) {
     this.button = nextPlayer(this.button);
 
     Server.io().sockets.emit("showdown", "Both players tie with "+hand+".");
-    setTimeout(this.startHand, 5000);
+    var dealer = this;
+    setTimeout(function () {dealer.startHand();}, 5000);
 };
 
 Dealer.prototype.action = function (pos,fold) {

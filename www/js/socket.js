@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8000');
+var socket = io.connect('http://192.168.1.7:8000');
 
 var toCall;
 var playerBet;
@@ -19,9 +19,9 @@ socket.on('startGame', function (stack) {
 });
 
 socket.on('startHand', function () {
-    clearShowdownMsg();
     clearHand();
     pot(0);
+    clearShowdownMsg();
 });
 
 socket.on('yourTurn', function (newToCall, minRaise, maxRaise, bet) {
@@ -33,8 +33,6 @@ socket.on('yourTurn', function (newToCall, minRaise, maxRaise, bet) {
     $("#raiseBtn").val("Raise "+minRaise);
     $("#raiseAmt").css("display","");
     $("#raiseBtn").css("display","");
-    console.log("minRaise= "+minRaise);
-    console.log("maxRaise= "+maxRaise);
     if (maxRaise < minRaise) {
         $("#raiseAmt").css("display","none");
         $("#raiseBtn").css("display","none");
@@ -60,9 +58,11 @@ socket.on('dealCards', function (cards) {
     if (playerNum === 1) {
         player1Cards(cards);
         player2Cards(['FD','FD']);
+        console.log("hole: "+cards);
     } else {
         player1Cards(['FD','FD']);
         player2Cards(cards);
+        console.log("hole: "+cards);
     }
 });
 
@@ -71,19 +71,22 @@ socket.on('stack1', function (size) {
 });
 
 socket.on('stack2', function (size) {
-    stack1(size);
+    stack2(size);
 });
 
 socket.on('flop', function (cards) {
     flop(cards);
+    console.log("flop: "+cards);
 });
 
 socket.on('turn', function (card) {
     turn(card);
+    console.log("turn: "+card)
 });
 
 socket.on('river', function (card) {
     river(card);
+    console.log("river: "+card)
 });
 
 socket.on('pot', function (size) {
@@ -98,6 +101,7 @@ socket.on('revealCards', function (cards) {
 
 socket.on('showdown', function (str) {
     showdown(str);
+    console.log(str);
 });
 
 socket.on('endGame', function(pos) {

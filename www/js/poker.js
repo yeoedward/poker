@@ -100,6 +100,7 @@ function pot (size) {
     potWidget = text;
     text.fillColor = 'black';
     text.content = 'Pot size: '+size;
+    view.draw();
 }
 
 function stack1 (amt) {
@@ -112,6 +113,7 @@ function stack1 (amt) {
     stack1Widget = text;
     text.fillColor = 'black';
     text.content = "Player 1's stack size: "+amt;
+    view.draw();
 }
 
 function stack2 (amt) {
@@ -124,6 +126,7 @@ function stack2 (amt) {
     stack2Widget = text;
     text.fillColor = 'black';
     text.content = "Player 2's stack size: "+amt;
+    view.draw();
 }
 
 function flop (cards) {
@@ -137,6 +140,7 @@ function flop (cards) {
         flop[i].position.y = view.center.y;
         board.push(flop[i]);
     }
+    view.draw();
 }
 
 function turn (c) {
@@ -145,6 +149,7 @@ function turn (c) {
     card.position.x = view.center.x + 1.25*width;
     card.position.y = view.center.y;
     board.push(card);
+    view.draw();
 }
 
 function river (c) {
@@ -153,6 +158,7 @@ function river (c) {
     card.position.x = view.center.x + 2.5*width;
     card.position.y = view.center.y;
     board.push(card);
+    view.draw();
 }
 
 function showdown (msg) {
@@ -162,6 +168,7 @@ function showdown (msg) {
     text.fillColor = 'black';
     text.content = msg;
     showdownMsg = text;
+    view.draw();
 }
 
 function player1Cards (cards) {
@@ -182,6 +189,7 @@ function player1Cards (cards) {
         cards[i].position.y = view.center.y;
         hole1.push(cards[i]);
     }
+    view.draw();
 }
 
 function player2Cards (cards) {
@@ -202,6 +210,7 @@ function player2Cards (cards) {
         cards[i].position.y = view.center.y;
         hole2.push(cards[i]);
     }
+    view.draw();
 }
 
 function player1Bet (amt) {
@@ -223,6 +232,7 @@ function player1Bet (amt) {
     chip.scale(n);
     chip.position.x = view.center.x - 3.5 * cardWidth() * m;
     chip.position.y = y;
+    view.draw();
 }
 
 function player2Bet (amt) {
@@ -244,6 +254,7 @@ function player2Bet (amt) {
     chip.scale(n);
     chip.position.x = view.center.x + 4 * cardWidth() * m;
     chip.position.y = y;
+    view.draw();
 }
 
 
@@ -257,6 +268,7 @@ function clearHand() {
     if (potWidget !== null)
         potWidget.remove();
     potWidget = null;
+    view.draw();
 }
 
 function clearBets() {
@@ -269,11 +281,14 @@ function clearBets() {
         p2Bet.map(function (w) {w.remove();});
         p2Bet = [];
     }
+    view.draw();
 }
 
 function clearShowdownMsg () {
     if (showdownMsg !== null)
         showdownMsg.remove();
+    showdownMsg = null;
+    view.draw();
 }
 
 function init () {
@@ -282,6 +297,7 @@ function init () {
     var table = new Raster("table");
     var tableBounds = new Rectangle(0,0, canvas.width, canvas.height); 
     table.fitBounds(tableBounds);
+    view.draw();
 }
 
 
